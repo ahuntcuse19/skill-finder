@@ -20,11 +20,11 @@ A skill is only promoted as a candidate if it's **repeated** (3+ instances), **s
 ## Install
 
 ```bash
-git clone https://github.com/[your-username]/skill-finder.git
+git clone https://github.com/ahuntcuse19/skill-finder.git
 cp -r skill-finder/skill-finder/ ~/.claude/skills/
 ```
 
-Then in Claude (Cowork, Claude Code, or any Claude environment with skill support), invoke it with:
+Then, in Claude (Cowork, Claude Code, or any Claude environment with skill support), invoke it with:
 
 > Run skill-finder on `~/path/to/working-folder`
 
