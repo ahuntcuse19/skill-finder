@@ -12,7 +12,7 @@ A meta-skill that finds skills. Given access to a user's working environment, it
 Trigger this skill when the user wants to:
 - Audit their workflow for automation opportunities
 - Find candidate skills hidden in their existing work patterns
-- Get started with skills but doesn't know where to begin
+- Get started with skills, but doesn't know where to begin
 - Generate a portfolio of skills tailored to their actual work, not generic templates
 
 Do NOT use this skill for:
