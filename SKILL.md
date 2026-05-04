@@ -1,6 +1,6 @@
 ---
 name: skill-finder
-description: Audit a user's working environment (folders, recurring calendar events, sent email patterns, Slack/Notion/Linear activity) to surface high-leverage skill and automation candidates, present them as a ranked report for human approval, and scaffold approved candidates into ready-to-use SKILL.md files. Use this skill any time the user asks to "find automation opportunities", "audit my workflow for skills", "what should I automate", "review my workspace and suggest skills", or "scan my work and tell me what to automate" — even if they don't use the word "skill" explicitly. Also use when a user says they're new to skills and wants to know where to start. Bias toward triggering this skill whenever the user mentions wanting to find, identify, or discover automation opportunities in their existing workflow.
+description: Audit a user's working environment (folders, recurring calendar events, sent email patterns, Granola meeting transcripts, Slack/Notion/Linear activity) to surface high-leverage skill and automation candidates, present them as a ranked report for human approval, and scaffold approved candidates into ready-to-use SKILL.md files. Use this skill any time the user asks to "find automation opportunities", "audit my workflow for skills", "what should I automate", "review my workspace and suggest skills", or "scan my work and tell me what to automate" — even if they don't use the word "skill" explicitly. Also use when a user says they're new to skills and wants to know where to start. Bias toward triggering this skill whenever the user mentions wanting to find, identify, or discover automation opportunities in their existing workflow.
 ---
 
 # skill-finder
@@ -34,7 +34,7 @@ Run these phases in order. Do not skip phases. Do not collapse them into a singl
 
 Before scanning anything, confirm with the user:
 
-1. **Which surfaces are in scope?** Read `references/surfaces.md` for the full list. At minimum, ask which folders to scan and which connectors are authorized (Gmail, Calendar, Slack, Linear, Notion, Asana).
+1. **Which surfaces are in scope?** Read `references/surfaces.md` for the full list. At minimum, ask which folders to scan and which connectors are authorized (Gmail, Calendar, Granola, Slack, Linear, Notion, Asana).
 2. **What's the time window?** Default to the last 90 days. Older signal is weaker.
 3. **Are there confidentiality boundaries?** Some folders may need to be excluded (legal, M&A, personnel files).
 
@@ -47,6 +47,7 @@ Capture artifacts across each in-scope surface. Read `references/surfaces.md` fo
 - File inventory: filename, path, size, last-modified, file type — grouped by directory
 - Recurring calendar events: title, frequency, attendees pattern, duration
 - Sent email patterns: recurring subjects/templates, recipient clusters, frequency
+- Granola meeting patterns: recurring meeting titles, folder/tag groupings, structured note patterns (decisions, action items), repeated post-meeting deliverable types
 - Slack/messaging patterns: channels with high activity, recurring questions the user is asked, recurring questions the user asks
 - Tool-specific artifacts: Linear ticket templates, Notion page patterns, Asana project structures
 
@@ -85,22 +86,53 @@ Convert each cluster into a skill candidate. For each candidate, fill in:
 
 Drop candidates with low confidence AND low frequency. They're not worth building.
 
-### Phase 5: Reporting
+### Phase 5: Reporting and conversational approval
 
 Generate the report at `~/skill-finder-output/03-skill-candidates-report.md`. Use the exact format in `references/output-format.md`. Critical conventions:
 
 - Maximum 7 candidates. Rank by `time_saved_per_use × frequency × confidence`. Cut everything else.
-- Each candidate has a checkbox: `- [ ] APPROVE`. The user toggles to `- [x] APPROVE` to approve.
-- Include a "Patterns we noticed but didn't recommend" section briefly explaining what was cut and why. This is a trust-building move — shows the user the work, not just the conclusion.
-- Include an "Open questions for you" section if any patterns were ambiguous.
+- Each candidate is presented as a numbered entry (1, 2, 3…). The numbering is the approval handle.
+- Include a "Considered but not recommended" section briefly explaining what was cut and why. This is a trust-building move — shows the user the work, not just the conclusion.
+- Include an "Open questions" section if any patterns were ambiguous.
 
-After writing the report, stop. Tell the user:
+After writing the report, present a short summary in chat (numbered list of candidates with one-line descriptions) and **ask the user directly which they'd like built**. Use this exact prompt structure:
 
-> Report saved to `~/skill-finder-output/03-skill-candidates-report.md`. Review it, mark approvals with `[x]`, and re-run this skill with the prompt "scaffold approved skills" to generate the SKILL.md files.
+> Report saved to `~/skill-finder-output/03-skill-candidates-report.md`. Here's the shortlist:
+>
+> 1. [skill-name] — [one-line description]
+> 2. [skill-name] — [one-line description]
+> 3. [skill-name] — [one-line description]
+> ...
+>
+> Which would you like me to build? You can say:
+> - "all" to build everything
+> - specific numbers like "1, 3, and 5"
+> - specific names like "the investor update and the friday wrap"
+> - "none" or "let me think about it" to stop here
 
-### Phase 6: Scaffolding (only when triggered)
+Then stop and wait for the user's response.
 
-Trigger condition: user says "scaffold approved skills" OR "build the approved ones" OR equivalent, AND `03-skill-candidates-report.md` exists with at least one `[x] APPROVE` checked.
+When the user replies, parse their answer:
+- "all" → all candidates approved
+- "none" / "stop" / "let me think" → exit without scaffolding
+- Numbers (e.g., "1, 3, 5") → match to candidate index
+- Names (e.g., "the investor update") → match to candidate name (be tolerant of partial matches)
+- Mixed (e.g., "1 and the friday wrap") → resolve both
+
+Before proceeding to scaffolding, **echo back the selection for confirmation**:
+
+> Got it — I'll build:
+> - [skill-name-1]
+> - [skill-name-2]
+> - [skill-name-3]
+>
+> Confirm and I'll start scaffolding. (Say "go" or "yes" to proceed, or "wait" to revise.)
+
+Wait for confirmation before moving to Phase 6. If the user revises ("actually drop #2"), update the selection and confirm again. Do not scaffold without explicit go-ahead.
+
+### Phase 6: Scaffolding
+
+Trigger condition: the user has explicitly confirmed the selection from Phase 5 (said "go", "yes", "build them", or equivalent affirmative response).
 
 For each approved candidate:
 1. Read `references/skill-template.md` for the SKILL.md template
@@ -117,7 +149,7 @@ After scaffolding, present the user with:
 
 1. **Generic skills**: "email-summarizer" or "meeting-notes-skill" are not useful outputs. They have to be tailored to the user's actual recurring artifacts.
 2. **Hallucinated patterns**: If a pattern only appears once or twice in the discovery output, do not promote it to a skill candidate. The threshold is 3+ instances unless the user explicitly flagged something as recurring.
-3. **Bypassing approval**: Never auto-scaffold without explicit `[x]` approval marks. The approval loop is the trust mechanism.
+3. **Bypassing approval**: Never auto-scaffold without an explicit affirmative response from the user (e.g., "go", "yes", "build them"). The conversational confirmation step is the trust mechanism — do not skip it, even if the user sounds enthusiastic earlier in the conversation.
 4. **Burying the cuts**: Always show what was considered and rejected. The user needs to know the thinking, not just the recommendation.
 5. **Skipping discovery**: Do not generate clusters or candidates from memory or assumption. Only from the actual discovery output file.
 
