@@ -12,7 +12,7 @@
 
 ## How to use this report
 
-Below are skill candidates ranked by impact. After you've reviewed them, I'll ask which ones to build — you can reply with numbers ("1, 3, and 5"), names ("the investor update and the friday wrap"), "all", or "none".
+Below are skill candidates ranked by impact. After you've reviewed them, I'll ask which ones to build — you can reply with numbers ("1, 3, and 5"), names ("the investor update and the Friday wrap"), "all", or "none".
 
 ---
 
