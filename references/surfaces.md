@@ -2,7 +2,7 @@
 
 ## File system
 
-**What to scan**: Folders explicitly granted by the user. Do not traverse outside scoped paths.
+**What to scan**: Folders explicitly granted by the user. Do not traverse outside-scoped paths.
 
 **Strong signals**:
 - Files with similar naming patterns (`Investor-Update-Mar`, `Investor-Update-Apr`, `Investor-Update-May`)
