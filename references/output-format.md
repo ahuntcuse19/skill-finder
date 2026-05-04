@@ -17,15 +17,13 @@ The report is the user-facing artifact. It must be skimmable in 90 seconds by a 
 
 ## How to use this report
 
-Below are skill candidates ranked by impact. Mark `[x]` next to each one you want built, then re-run skill-finder with the prompt "scaffold approved skills" and Claude will generate the SKILL.md files.
+Below are skill candidates ranked by impact. After reading the report, Claude will ask which ones you'd like built — you can reply with numbers ("1, 3, and 5"), names ("the investor update and the friday wrap"), "all", or "none".
 
 ---
 
 ## Recommended skills
 
 ### 1. [skill-name]
-
-- [ ] **APPROVE**
 
 **What it does**: [one sentence]
 **When it fires**: [trigger condition / user phrase]
@@ -68,14 +66,14 @@ If any patterns were ambiguous or the user could clarify:
 
 ## Next step
 
-Mark `[x] APPROVE` next to the skills you want, then say "scaffold approved skills".
+After Claude presents the report, it will ask which candidates to build. Reply with numbers ("1, 3, 5"), names ("the investor update"), "all", or "none". Claude will echo back the selection for confirmation before scaffolding.
 ```
 
 ## Tone and language conventions
 
 - **No fluff.** Every line has to earn its place. Cut all "I noticed that..." and "It seems like..." preambles.
 - **Use the user's language.** If they call it a "weekly board update", call it that. If they call it a "shareholder note", call it that. Discovery output should give you their vocabulary.
-- **Lead with impact.** First sentence of "What it does" should describe the *outcome*, not the mechanism. "Drafts your monthly Pantera update from this month's metrics and qualitative notes" not "Reads files in /pantera-monthly and produces a markdown document."
+- **Lead with impact.** First sentence of "What it does" should describe the *outcome*, not the mechanism. "Drafts your monthly investor update from this month's metrics and qualitative notes" not "Reads files in /investor-monthly and produces a markdown document."
 - **Be honest about confidence.** A "medium confidence" candidate with strong impact is worth surfacing; mark it medium and let the user judge.
 - **Show evidence.** The "Underlying pattern" line is non-negotiable. The user has to be able to verify why each candidate was promoted.
 
@@ -85,4 +83,4 @@ Mark `[x] APPROVE` next to the skills you want, then say "scaffold approved skil
 - Long explanations of what a skill is
 - Caveats about limitations of LLMs
 - Comparisons to other tools
-- Anything that doesn't help the user decide which boxes to tick
+- Anything that doesn't help the user decide which candidates to approve
